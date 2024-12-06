@@ -1,0 +1,34 @@
+#Connor Ketron/Gabe Emery
+#cjketron42@tntech.edu
+#geemery42@tntech.edu
+
+from machine import Pin,ADC
+import utime
+
+soil_probe = ADC(Pin(27))
+led = machine.Pin("LED", machine.Pin.OUT)
+pump = machine.Pin(13, machine.Pin.OUT)
+
+max_moisture = 27574
+min_moisture = 57100
+
+def moisture_percentage(moisture_level):
+    point_1_x = min_moisture
+    point_2_x = max_moisture
+    point_1_y = 0
+    point_2_y = 100
+    m = ((point_2_y - point_1_y) / (point_2_x - point_1_x))
+    return int((m*moisture_level) - (m*min_moisture))
+
+while True:
+    moisture_level = soil_probe.read_u16()
+    if moisture_percentage(moisture_level) <= 27:
+        led(1)
+        pump(1)
+    else:
+        led(0)
+        pump(0)
+    utime.sleep(1)
+
+#The code for the soil probe was based on the code by J.C.Williams on the class repository.
+#ChatGPT was used for debugging purposes on part of the code.
